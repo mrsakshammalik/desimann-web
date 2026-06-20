@@ -1,0 +1,182 @@
+// This is your Prisma schema file
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  clerkId   String   @unique
+  email     String   @unique
+  name      String?
+  role      String   @default("VIEWER")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+
+model WaitlistLead {
+  id                String   @id @default(cuid())
+  name              String
+  email             String   @unique
+  phone             String
+  city              String
+  interestedProduct String
+  referralCode      String   @unique
+  
+  // Self-relation for referrals
+  referredByCode    String?
+  referredBy        WaitlistLead?  @relation("Referrals", fields: [referredByCode], references: [referralCode])
+  referrals         WaitlistLead[] @relation("Referrals")
+  
+  rewardClaims      RewardClaim[]
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model RewardTier {
+  id                String        @id @default(cuid())
+  name              String
+  requiredReferrals Int
+  description       String
+  active            Boolean       @default(true)
+  claims            RewardClaim[]
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+}
+
+model RewardClaim {
+  id           String       @id @default(cuid())
+  leadId       String
+  lead         WaitlistLead @relation(fields: [leadId], references: [id])
+  rewardTierId String
+  rewardTier   RewardTier   @relation(fields: [rewardTierId], references: [id])
+  unlockedAt   DateTime     @default(now())
+
+  @@unique([leadId, rewardTierId])
+}
+
+model ContactRequest {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String
+  subject   String
+  message   String
+  status    String   @default("PENDING")
+  createdAt DateTime @default(now())
+}
+
+
+
+model EmailLog {
+  id        String   @id @default(cuid())
+  recipient String
+  subject   String
+  template  String
+  status    String   // SUCCESS or FAILED
+  error     String?
+  sentAt    DateTime @default(now())
+}
+
+model SiteSettings {
+  id                  String   @id @default("singleton")
+  // SMTP settings
+  smtpHost            String?
+  smtpPort            Int?
+  smtpUser            String?
+  smtpPass            String?
+  senderName          String?
+  senderEmail         String?
+  smtpEnabled         Boolean  @default(false)
+  // Cloudinary settings
+  cloudinaryName      String?
+  cloudinaryApiKey    String?
+  cloudinaryApiSecret String?
+  
+  updatedAt           DateTime @updatedAt
+}
+
+model Founder {
+  id          String   @id @default(cuid())
+  name        String
+  designation String
+  description String
+  photoUrl    String?
+  linkedinUrl String?
+  instagramUrl String?
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model NewsletterSubscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+model BlogCategory {
+  id        String     @id @default(cuid())
+  name      String     @unique
+  slug      String     @unique
+  posts     BlogPost[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model BlogPost {
+  id          String        @id @default(cuid())
+  title       String
+  slug        String        @unique
+  excerpt     String?
+  content     String        // Markdown content
+  coverImage  String?
+  published   Boolean       @default(false)
+  author      String        @default("Desimann Team")
+  categoryId  String
+  category    BlogCategory  @relation(fields: [categoryId], references: [id])
+  tags        String?       // Comma separated tags
+  
+  // SEO overrides for this post
+  metaTitle       String?
+  metaDescription String?
+  keywords        String?
+
+  publishedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model SeoMetadata {
+  id              String   @id @default("global") // We will use 'global' for the site-wide settings
+  siteName        String   @default("Desimann")
+  metaTitle       String   @default("Desimann — Dil Se Desi, Swad Mein Asli")
+  metaDescription String   @default("India's most trusted homemade food brand.")
+  keywords        String?  // Comma separated
+  ogImage         String?
+  twitterHandle   String?
+  
+  updatedAt       DateTime @updatedAt
+}
+
+model AnalyticsTracking {
+  id                  String   @id @default("singleton")
+  ga4Id               String?  // Google Analytics 4 Measurement ID
+  metaPixelId         String?  // Facebook/Meta Pixel ID
+  clarityId           String?  // Microsoft Clarity ID
+  googleSiteVerifyId  String?  // Google Search Console verification code
+  bingSiteVerifyId    String?  // Bing Webmaster verification code
+  
+  updatedAt           DateTime @updatedAt
+}
