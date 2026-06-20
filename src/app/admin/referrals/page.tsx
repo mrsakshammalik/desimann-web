@@ -6,20 +6,12 @@ export const dynamic = "force-dynamic";
 export default async function ReferralsPage() {
   const user = { firstName: "Demo Admin" };
 
-  // Get top referrers
-  let topReferrers: Array<{ name: string | null }> = [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let topReferrers: any[] = [];
   try {
     topReferrers = await prisma.waitlistLead.findMany({
-      where: {
-        referrals: {
-          some: {} // has at least one
-        }
-      },
-      include: {
-        _count: {
-          select: { referrals: true }
-        }
-      },
+      where: { referrals: { some: {} } },
+      include: { _count: { select: { referrals: true } } },
       orderBy: {
         referrals: {
           _count: 'desc'

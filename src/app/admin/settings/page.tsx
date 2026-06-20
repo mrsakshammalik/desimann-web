@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 export default async function SettingsPage() {
   const user = { firstName: "Demo Admin" };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let settings: any = {};
   try {
     settings = await prisma.siteSettings.upsert({
