@@ -7,7 +7,7 @@ export default async function ReferralsPage() {
   const user = { firstName: "Demo Admin" };
 
   // Get top referrers
-  let topReferrers: unknown[] = [];
+  let topReferrers: Array<{ name: string | null }> = [];
   try {
     topReferrers = await prisma.waitlistLead.findMany({
       where: {
