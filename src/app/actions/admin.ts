@@ -15,7 +15,6 @@ export async function updateSeoSettings(formData: FormData) {
   });
 
   revalidatePath("/", "layout");
-  return { success: true };
 }
 
 export async function updateAnalyticsSettings(formData: FormData) {
@@ -30,7 +29,6 @@ export async function updateAnalyticsSettings(formData: FormData) {
   });
 
   revalidatePath("/", "layout");
-  return { success: true };
 }
 
 export async function saveBlogPost(formData: FormData) {
@@ -60,5 +58,4 @@ export async function saveBlogPost(formData: FormData) {
 
   revalidatePath("/blog");
   revalidatePath("/sitemap.xml");
-  return { success: true };
 }
