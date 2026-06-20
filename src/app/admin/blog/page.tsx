@@ -2,6 +2,8 @@ import prisma from "@/lib/prisma";
 import { saveBlogPost } from "@/app/actions/admin";
 import { Save, PlusCircle } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminBlogPage() {
   const posts = await prisma.blogPost.findMany({
     include: { category: true },

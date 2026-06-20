@@ -2,6 +2,8 @@ import prisma from "@/lib/prisma";
 import { updateSeoSettings, updateAnalyticsSettings } from "@/app/actions/admin";
 import { Save } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminSeoPage() {
   const seo = await prisma.seoMetadata.findUnique({ where: { id: "global" } });
   const tracking = await prisma.analyticsTracking.findUnique({ where: { id: "singleton" } });
